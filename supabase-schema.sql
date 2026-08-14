@@ -41,3 +41,15 @@ create policy "public read approved feedback" on feedback for select using (appr
 create policy "authenticated manage websites" on websites for all to authenticated using (true) with check (true);
 create policy "authenticated manage feedback" on feedback for all to authenticated using (true) with check (true);
 create policy "authenticated manage settings" on settings for all to authenticated using (true) with check (true);
+
+
+-- Supabase Storage for website images
+insert into storage.buckets (id, name, public) values ('site-images','site-images',true) on conflict (id) do update set public=true;
+drop policy if exists "public read site images" on storage.objects;
+drop policy if exists "authenticated upload site images" on storage.objects;
+drop policy if exists "authenticated update site images" on storage.objects;
+drop policy if exists "authenticated delete site images" on storage.objects;
+create policy "public read site images" on storage.objects for select using (bucket_id='site-images');
+create policy "authenticated upload site images" on storage.objects for insert to authenticated with check (bucket_id='site-images');
+create policy "authenticated update site images" on storage.objects for update to authenticated using (bucket_id='site-images') with check (bucket_id='site-images');
+create policy "authenticated delete site images" on storage.objects for delete to authenticated using (bucket_id='site-images');
